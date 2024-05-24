@@ -21,7 +21,7 @@ function onEdit(e) {
   }
 
   var bulletin = buildAvalancheBulletin(targetColumn);
-  console.log(bulletin);
+  //console.log(bulletin);
 
   writeAvalancheBulletin(bulletin);
 }
@@ -45,7 +45,7 @@ function writeAvalancheBulletin(bulletin) {
 
   for (let avTypeName in bulletin) {
     const avType = bulletin[avTypeName];
-    const range = sheet.getRange(2 + avType.offset, 14, 16, 2);
+    const range = sheet.getRange(2, 14, 16 * 6, 2);
     const values = range.getValues();
 
     for (let aspect in map) {
@@ -58,8 +58,8 @@ function writeAvalancheBulletin(bulletin) {
       const ixs = map[aspect];
 
       for (let ix of ixs) {
-        values[ix][0] = inner;
-        values[ix][1] = outer;
+        values[ix + avType.offset][0] = inner;
+        values[ix + avType.offset][1] = outer;
       }
     }
   
