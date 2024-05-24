@@ -10,9 +10,9 @@ const aspectIxMap = {
   'W' : [11, 12, 13],
   'NW': [13, 14, 15]
 };
+const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
 function debug() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = spreadsheet.getSheetByName('Aragats - bulletin');
   const range = sheet.getRange(1, 2);
   onEdit({range: range});
@@ -40,8 +40,6 @@ function onEdit(e) {
 
 function writeAvalancheBulletin(bulletin) {
   console.log('Writing the bulletin...');
-
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
   // Get the specific sheet by name
   const sheetName = 'Aragats - bulletin'; // Replace with the name of your sheet
@@ -80,8 +78,6 @@ function writeAvalancheBulletin(bulletin) {
 
 function buildAvalancheBulletin(dateCol) {
   console.log('Building the bulletin...');
-
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
   // Get the specific sheet by name
   const sheetName = 'Aragats - overview'; // Replace with the name of your sheet
@@ -144,25 +140,16 @@ function getAspects(value, aspectsStr) {
 }
 
 function getTargetColumn(date) {
-  // Get the active spreadsheet
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-
-  // Get the specific sheet by name
   const sheetName = 'Aragats - overview'; // Replace with the name of your sheet
   const sheet = spreadsheet.getSheetByName(sheetName);
   var datesRange = sheet.getRange(1, 1, 1, 100);
   
-  // Get all values in the sheet
   const dates = datesRange.getValues();
 
-  // Iterate through each row
   for (let i = 0; i < dates.length; i++) {
     for (let j = 0; j < dates[i].length; j++) {
-      // Check if the cell contains the edited value
       if (dates[i][j] == date) {
-        // Log the column number (1-indexed)
         console.log('Value found in column: ' + (j + 1));
-        // Return the column number
         return j + 1;
       }
     }
