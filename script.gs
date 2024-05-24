@@ -21,7 +21,6 @@ function onEdit(e) {
   }
 
   var bulletin = buildAvalancheBulletin(targetColumn);
-  //console.log(bulletin);
 
   writeAvalancheBulletin(bulletin);
 }
@@ -110,12 +109,6 @@ function buildAvalancheBulletin(dateCol) {
       'offset': 80
     }
   };
-
-  for (let i = 0; i < values.length; i++) {
-    for (let j = 0; j < values[i].length; j++) {
-      //console.log("[" + i + ", " + j + "]: " + values[i][j]);
-    }
-  }
 
   return res;
 }
