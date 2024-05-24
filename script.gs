@@ -1,14 +1,14 @@
 const pattern = /^\[([A-Za-z]+(?:,\s*[A-Za-z]+)*)\]/;
 const allAspects = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const aspectIxMap = {
-  'N' : [0, 1],
-  'NE': [2, 3],
-  'E' : [4, 5],
-  'SE': [6, 7],
-  'S' : [8, 9],
-  'SW': [10, 11],
-  'W' : [12, 13],
-  'NW': [14, 15]
+  'N' : [15, 0, 1],
+  'NE': [1, 2, 3],
+  'E' : [3, 4, 5],
+  'SE': [5, 6, 7],
+  'S' : [7, 8, 9],
+  'SW': [9, 10, 11],
+  'W' : [11, 12, 13],
+  'NW': [13, 14, 15]
 };
 
 function debug() {
@@ -47,7 +47,11 @@ function writeAvalancheBulletin(bulletin) {
   const sheetName = 'Aragats - bulletin'; // Replace with the name of your sheet
   const sheet = spreadsheet.getSheetByName(sheetName);
   const range = sheet.getRange(2, 14, 16 * 6, 2);
-  const values = range.getValues();
+  const values = [];
+
+  for (let i = 0; i < 16 * 6; ++i) {
+    values.push([0,0]);
+  }
 
   for (let avTypeName in bulletin) {
     const avType = bulletin[avTypeName];
@@ -62,8 +66,11 @@ function writeAvalancheBulletin(bulletin) {
       const ixs = aspectIxMap[aspect];
 
       for (let ix of ixs) {
-        values[ix + avType.offset][0] = inner;
-        values[ix + avType.offset][1] = outer;
+        if (values[ix + avType.offset][0] == 0)
+          values[ix + avType.offset][0] = inner;
+        
+        if (values[ix + avType.offset][1] == 0)
+          values[ix + avType.offset][1] = outer;
       }
     }
   }
