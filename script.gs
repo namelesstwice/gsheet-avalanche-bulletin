@@ -132,11 +132,9 @@ function getAspects(value, aspectsStr) {
 
   let isPresent = value > 0;
   const match = aspectsStr.match(pattern);
-  let aspects = null
-
-  if (match) {
-    aspects = new Map(match[1].split(',').map(word => [word.trim(),true])); // Extract and trim individual words
-  }
+  let aspects = match
+    ? new Map(match[1].split(',').map(word => [word.trim(),true]))
+    : null;
 
   for (let aspect of allAspects) {
     res[aspect] = isPresent && (!aspects || aspects.has(aspect));
