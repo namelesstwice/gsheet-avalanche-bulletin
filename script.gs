@@ -61,7 +61,7 @@ function writeAvalancheBulletin(bulletin) {
       const a = avType['alpine'][aspect];
 
       const outer = a ? 2: 0;
-      const inner = (ha || (a && !ha)) ? 1 : 0;
+      const inner = ((ha && !a) || (a && !ha)) ? 1 : 0;
 
       const ixs = aspectIxMap[aspect];
 
