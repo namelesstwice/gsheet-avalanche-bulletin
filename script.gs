@@ -1,3 +1,16 @@
+const pattern = /^\[([A-Za-z]+(?:,\s*[A-Za-z]+)*)\]/;
+const allAspects = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+const aspectIxMap = {
+  'N' : [0, 1],
+  'NE': [2, 3],
+  'E' : [4, 5],
+  'SE': [6, 7],
+  'S' : [8, 9],
+  'SW': [10, 11],
+  'W' : [12, 13],
+  'NW': [14, 15]
+};
+
 function debug() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = spreadsheet.getSheetByName('Aragats - bulletin');
@@ -26,47 +39,41 @@ function onEdit(e) {
 }
 
 function writeAvalancheBulletin(bulletin) {
-  const map = {
-    'N' : [0, 1],
-    'NE': [2, 3],
-    'E' : [4, 5],
-    'SE': [6, 7],
-    'S' : [8, 9],
-    'SW': [10, 11],
-    'W' : [12, 13],
-    'NW': [14, 15]
-  };
+  console.log('Writing the bulletin...');
+
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
   // Get the specific sheet by name
   const sheetName = 'Aragats - bulletin'; // Replace with the name of your sheet
   const sheet = spreadsheet.getSheetByName(sheetName);
+  const range = sheet.getRange(2, 14, 16 * 6, 2);
+  const values = range.getValues();
 
   for (let avTypeName in bulletin) {
     const avType = bulletin[avTypeName];
-    const range = sheet.getRange(2, 14, 16 * 6, 2);
-    const values = range.getValues();
 
-    for (let aspect in map) {
+    for (let aspect in aspectIxMap) {
       const ha = avType['highAlpine'][aspect];
       const a = avType['alpine'][aspect];
 
       const outer = a ? 2: 0;
       const inner = (ha || (a && !ha)) ? 1 : 0;
 
-      const ixs = map[aspect];
+      const ixs = aspectIxMap[aspect];
 
       for (let ix of ixs) {
         values[ix + avType.offset][0] = inner;
         values[ix + avType.offset][1] = outer;
       }
     }
-  
-    range.setValues(values);
   }
+
+  range.setValues(values);
 }
 
 function buildAvalancheBulletin(dateCol) {
+  console.log('Building the bulletin...');
+
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
   // Get the specific sheet by name
@@ -115,21 +122,17 @@ function buildAvalancheBulletin(dateCol) {
 
 function getAspects(value, aspectsStr) {
   let res = {};
-  const pattern = /^\[([A-Za-z]+(?:,\s*[A-Za-z]+)*)\]/;
-  const allAspects = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-  let aspects = allAspects;
 
   let isPresent = value > 0;
   const match = aspectsStr.match(pattern);
+  let aspects = null
 
   if (match) {
-    // If there's a match, extract the matched pattern and the remaining string
-    const matchedPattern = match[0]; // The full match: [word1, word2, ...]
-    aspects = match[1].split(',').map(word => word.trim()); // Extract and trim individual words
+    aspects = new Map(match[1].split(',').map(word => [word.trim(),true])); // Extract and trim individual words
   }
 
   for (let aspect of allAspects) {
-    res[aspect] = isPresent && aspects.indexOf(aspect) !== -1;
+    res[aspect] = isPresent && (!aspects || aspects.has(aspect));
   }
 
   return res;
